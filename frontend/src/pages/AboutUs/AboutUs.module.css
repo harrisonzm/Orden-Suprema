@@ -1,6 +1,6 @@
 .aboutUs {
   min-height: 100vh;
-  background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+  background: var(--gradient-dark-vertical);
   padding: 8rem 2rem 4rem;
   display: flex;
   align-items: center;
@@ -67,14 +67,14 @@
 .emblemMiddle {
   width: 85%;
   height: 85%;
-  border: 3px solid #d4a574;
+  border: 3px solid var(--secondary-gold);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: radial-gradient(circle, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.9) 100%);
   box-shadow: 
-    0 0 40px rgba(212, 165, 116, 0.4),
+    0 0 40px var(--gold-alpha-40),
     inset 0 0 40px rgba(0, 0, 0, 0.6);
   position: relative;
 }
@@ -83,7 +83,7 @@
   content: '';
   position: absolute;
   inset: 10px;
-  border: 2px solid rgba(212, 165, 116, 0.3);
+  border: 2px solid var(--gold-alpha-30);
   border-radius: 50%;
 }
 
@@ -98,8 +98,8 @@
 .emblemIcon {
   width: 100%;
   height: 100%;
-  color: #d4a574;
-  filter: drop-shadow(0 0 15px rgba(212, 165, 116, 0.6));
+  color: var(--secondary-gold);
+  filter: drop-shadow(0 0 15px var(--gold-alpha-60));
 }
 
 .content {
@@ -112,7 +112,7 @@
 .title {
   font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 900;
-  color: #ffffff;
+  color: var(--text-primary);
   letter-spacing: 0.05em;
   margin: 0;
   line-height: 1.2;
@@ -121,7 +121,7 @@
 .description {
   font-size: clamp(1rem, 2vw, 1.25rem);
   line-height: 1.8;
-  color: #e0e0e0;
+  color: var(--text-light);
   margin: 0;
   text-align: justify;
 }

@@ -1,6 +1,6 @@
 .leaderboard {
   min-height: 100vh;
-  background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+  background: var(--gradient-dark-vertical);
   padding: 8rem 2rem 4rem;
 }
 
@@ -18,14 +18,14 @@
 .title {
   font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 900;
-  color: #ffffff;
+  color: var(--text-primary);
   letter-spacing: 0.1em;
   margin: 0 0 1.5rem 0;
 }
 
 .subtitle {
   font-size: clamp(1rem, 2vw, 1.25rem);
-  color: #e0e0e0;
+  color: var(--text-light);
   max-width: 800px;
   margin: 0 auto;
   line-height: 1.6;
@@ -39,14 +39,14 @@
 }
 
 .item {
-  background: linear-gradient(90deg, #d4a574 0%, #c89960 100%);
+  background: var(--gradient-gold-horizontal);
   border-radius: 12px;
   padding: 1.5rem 2rem;
   display: flex;
   align-items: center;
   gap: 2rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-dark);
   position: relative;
   overflow: hidden;
 }
@@ -64,16 +64,16 @@
 
 .item:hover {
   transform: translateX(10px);
-  box-shadow: 0 6px 25px rgba(212, 165, 116, 0.5);
+  box-shadow: var(--shadow-gold-xl);
 }
 
 .topThree {
-  background: linear-gradient(90deg, #e6b886 0%, #d4a574 100%);
-  box-shadow: 0 6px 20px rgba(212, 165, 116, 0.4);
+  background: var(--gradient-gold-light);
+  box-shadow: var(--shadow-gold-lg);
 }
 
 .topThree:hover {
-  box-shadow: 0 8px 30px rgba(212, 165, 116, 0.6);
+  box-shadow: var(--shadow-gold-xl);
 }
 
 .rankBadge {
@@ -93,14 +93,14 @@
 .rankNumber {
   font-size: 1.5rem;
   font-weight: 900;
-  color: #1a1a1a;
+  color: var(--bg-secondary);
 }
 
 .name {
   flex: 1;
   font-size: clamp(1.25rem, 3vw, 1.75rem);
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--bg-secondary);
   position: relative;
   z-index: 1;
 }
@@ -109,7 +109,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #1a1a1a;
+  background-color: var(--bg-secondary);
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   min-width: 100px;
@@ -120,14 +120,14 @@
 .contractsNumber {
   font-size: 1.75rem;
   font-weight: 900;
-  color: #ffffff;
+  color: var(--text-primary);
   line-height: 1;
 }
 
 .contractsLabel {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #d4a574;
+  color: var(--secondary-gold);
   letter-spacing: 0.05em;
   margin-top: 0.25rem;
 }
