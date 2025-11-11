@@ -35,7 +35,8 @@ const Admin = () => {
     handleSuspendAssassin,
     handleDeleteAssassin,
     getStatusColor,
-    getStatusText
+    getStatusText,
+    loadTransactions
   } = useAdmin();
 
   return (
@@ -230,12 +231,27 @@ const Admin = () => {
         {/* Tab: Ver Transacciones */}
         {activeTab === 'transactions' && (
           <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>
-              {isSpanish ? 'Historial de transacciones' : 'Transaction History'}
-            </h2>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>
+                {isSpanish ? 'Historial de transacciones' : 'Transaction History'}
+              </h2>
+              <button 
+                className={styles.refreshButton}
+                onClick={loadTransactions}
+                title={isSpanish ? 'Actualizar transacciones' : 'Refresh transactions'}
+              >
+                🔄 {isSpanish ? 'Actualizar' : 'Refresh'}
+              </button>
+            </div>
 
-            <div className={styles.transactionsList}>
-              {transactions.map((transaction) => (
+            {transactions.length === 0 ? (
+              <div className={styles.emptyState}>
+                <span className={styles.emptyIcon}>💰</span>
+                <p>{isSpanish ? 'No hay transacciones registradas' : 'No transactions recorded'}</p>
+              </div>
+            ) : (
+              <div className={styles.transactionsList}>
+                {transactions.map((transaction) => (
                 <div key={transaction.id} className={styles.transactionCard}>
                   <div className={styles.transactionIcon}>
                     {transaction.type === 'purchase' && '🛒'}
@@ -261,7 +277,8 @@ const Admin = () => {
                   </div>
                 </div>
               ))}
-            </div>
+              </div>
+            )}
           </section>
         )}
 

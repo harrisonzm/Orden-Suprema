@@ -39,9 +39,16 @@ const Assassins = () => {
     setNewMissionLocation,
     newMissionDeadline,
     setNewMissionDeadline,
+    showSendCoinsModal,
+    setShowSendCoinsModal,
+    coinsToSend,
+    setCoinsToSend,
+    transferMessage,
+    setTransferMessage,
     handleViewDetails,
     handleProposeClick,
     handleSubmitProposal,
+    handleSendCoins,
     getStatusColor,
     getStatusText,
     isSpanish
@@ -340,6 +347,89 @@ const Assassins = () => {
                     ))}
                   </div>
                 </div>
+
+                {/* Sección de envío de monedas */}
+                {currentUser && (
+                  <div className={styles.modalSection}>
+                    <h3 className={styles.sectionTitle}>
+                      {isSpanish ? 'Enviar Monedas' : 'Send Coins'}
+                    </h3>
+                    
+                    {!showSendCoinsModal ? (
+                      <button
+                        className={styles.sendCoinsButton}
+                        onClick={() => setShowSendCoinsModal(true)}
+                      >
+                        <span className={styles.sendCoinsIcon}>💰</span>
+                        {isSpanish ? 'Enviar Monedas' : 'Send Coins'}
+                      </button>
+                    ) : (
+                      <form className={styles.sendCoinsForm} onSubmit={handleSendCoins}>
+                        <div className={styles.userCoinsInfo}>
+                          <span className={styles.userCoinsLabel}>
+                            {isSpanish ? 'Tus monedas:' : 'Your coins:'}
+                          </span>
+                          <span className={styles.userCoinsAmount}>
+                            🪙 {currentUser.coins.toLocaleString()}
+                          </span>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                          <label htmlFor="coinsAmount" className={styles.label}>
+                            {isSpanish ? 'Cantidad de monedas' : 'Amount of coins'}
+                          </label>
+                          <input
+                            id="coinsAmount"
+                            type="number"
+                            value={coinsToSend}
+                            onChange={(e) => setCoinsToSend(e.target.value)}
+                            className={styles.input}
+                            placeholder="1000"
+                            min="1"
+                            max={currentUser.coins}
+                            required
+                          />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                          <label htmlFor="transferMessage" className={styles.label}>
+                            {isSpanish ? 'Mensaje (opcional)' : 'Message (optional)'}
+                          </label>
+                          <textarea
+                            id="transferMessage"
+                            value={transferMessage}
+                            onChange={(e) => setTransferMessage(e.target.value)}
+                            className={styles.textarea}
+                            placeholder={isSpanish ? 'Ej: Pago por servicios prestados' : 'Ex: Payment for services rendered'}
+                            rows={3}
+                          />
+                        </div>
+
+                        <div className={styles.sendCoinsActions}>
+                          <button
+                            type="button"
+                            className={styles.cancelButton}
+                            onClick={() => {
+                              setShowSendCoinsModal(false);
+                              setCoinsToSend('');
+                              setTransferMessage('');
+                            }}
+                          >
+                            {isSpanish ? 'Cancelar' : 'Cancel'}
+                          </button>
+                          <button
+                            type="submit"
+                            className={styles.confirmSendButton}
+                            disabled={!coinsToSend || parseInt(coinsToSend) <= 0 || parseInt(coinsToSend) > currentUser.coins}
+                          >
+                            <span className={styles.buttonIcon}>💸</span>
+                            {isSpanish ? 'Enviar' : 'Send'}
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

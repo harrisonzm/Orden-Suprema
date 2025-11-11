@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { DebtNotification, debtService } from '../services/debtService';
+import { Notification, notificationService } from '../services/notificationService';
 import styles from './NotificationsPanel.module.css';
 
 interface User {
@@ -16,7 +17,8 @@ interface NotificationsPanelProps {
 
 export const NotificationsPanel = ({ currentUser, isSpanish }: NotificationsPanelProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<DebtNotification[]>([]);
+  const [debtNotifications, setDebtNotifications] = useState<DebtNotification[]>([]);
+  const [transferNotifications, setTransferNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // Cargar notificaciones
@@ -24,10 +26,21 @@ export const NotificationsPanel = ({ currentUser, isSpanish }: NotificationsPane
     if (!currentUser) return;
 
     try {
-      const userIdEncoded = btoa(currentUser.email);
-      const userNotifications = debtService.getNotificationsForAssassin(userIdEncoded);
-      setNotifications(userNotifications);
-      console.log('📬 Notificaciones cargadas:', userNotifications.length);
+      // Cargar notificaciones de deudas (solo para asesinos)
+      if (currentUser.role === 'assassin') {
+        const userIdEncoded = btoa(currentUser.email);
+        const userDebtNotifications = debtService.getNotificationsForAssassin(userIdEncoded);
+        setDebtNotifications(userDebtNotifications);
+      }
+
+      // Cargar notificaciones de transferencias (para todos)
+      const userTransferNotifications = notificationService.getForUser(currentUser.email);
+      setTransferNotifications(userTransferNotifications);
+      
+      console.log('📬 Notificaciones cargadas:', {
+        deudas: debtNotifications.length,
+        transferencias: userTransferNotifications.length
+      });
     } catch (error) {
       console.error('Error loading notifications:', error);
     }
@@ -143,11 +156,16 @@ export const NotificationsPanel = ({ currentUser, isSpanish }: NotificationsPane
     }
   };
 
-  if (!currentUser || currentUser.role !== 'assassin') {
+  if (!currentUser) {
     return null;
   }
 
-  const pendingCount = notifications.length;
+  const handleDismissTransfer = (notificationId: string) => {
+    notificationService.markAsRead(notificationId);
+    loadNotifications();
+  };
+
+  const pendingCount = debtNotifications.length + transferNotifications.length;
 
   return (
     <div className={styles.container}>
@@ -178,13 +196,55 @@ export const NotificationsPanel = ({ currentUser, isSpanish }: NotificationsPane
           </div>
 
           <div className={styles.content}>
-            {notifications.length === 0 ? (
+            {pendingCount === 0 ? (
               <div className={styles.empty}>
                 <span className={styles.emptyIcon}>📭</span>
                 <p>{isSpanish ? 'No tienes notificaciones' : 'No notifications'}</p>
               </div>
             ) : (
-              notifications.map((notification) => (
+              <>
+                {/* Notificaciones de transferencias */}
+                {transferNotifications.map((notification) => (
+                  <div key={notification.id} className={styles.notificationCard}>
+                    <div className={styles.notificationHeader}>
+                      <span className={styles.notificationIcon}>💸</span>
+                      <span className={styles.notificationTitle}>
+                        {isSpanish ? 'Transferencia Recibida' : 'Transfer Received'}
+                      </span>
+                    </div>
+                    <div className={styles.notificationBody}>
+                      <p className={styles.sender}>
+                        {isSpanish ? 'De: ' : 'From: '}
+                        <strong>{notification.senderName}</strong>
+                      </p>
+                      <p className={styles.amount}>
+                        <span className={styles.amountLabel}>
+                          {isSpanish ? 'Cantidad:' : 'Amount:'}
+                        </span>
+                        <span className={styles.amountValue}>
+                          🪙 {notification.amount?.toLocaleString()}
+                        </span>
+                      </p>
+                      {notification.message && (
+                        <p className={styles.description}>"{notification.message}"</p>
+                      )}
+                      <p className={styles.timestamp}>
+                        {new Date(notification.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className={styles.notificationActions}>
+                      <button
+                        className={styles.dismissButton}
+                        onClick={() => handleDismissTransfer(notification.id)}
+                      >
+                        {isSpanish ? 'Entendido' : 'Got it'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Notificaciones de deudas */}
+                {debtNotifications.map((notification) => (
                 <div key={notification.id} className={styles.notificationCard}>
                   {notification.type === 'favor_request' && (
                     <>
@@ -297,7 +357,8 @@ export const NotificationsPanel = ({ currentUser, isSpanish }: NotificationsPane
                     </>
                   )}
                 </div>
-              ))
+              ))}
+              </>
             )}
           </div>
         </div>

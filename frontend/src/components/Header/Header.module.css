@@ -11,6 +11,7 @@
   z-index: 1000;
   box-shadow: var(--shadow-dark);
   border-bottom: 1px solid var(--gold-alpha-20);
+  overflow: visible;
 }
 
 .logo {
@@ -54,6 +55,9 @@
   gap: 1rem;
   flex: 1;
   justify-content: center;
+  overflow: visible;
+  position: relative;
+  z-index: 1001;
 }
 
 .navButton {
@@ -72,22 +76,24 @@
   overflow: hidden;
 }
 
+
+
 .navButton::before {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 12px;
   background: var(--gold-alpha-20);
-  transform: translate(-50%, -50%);
-  transition: width 0.4s ease, height 0.4s ease;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
 }
 
 .navButton:hover::before {
-  width: 100%;
-  height: 100%;
+  opacity: 1;
 }
 
 .navButton:hover {
@@ -506,4 +512,34 @@
 
 .profileMenuItem:has(.themeToggleContainer):hover {
   background: transparent;
+}
+
+/* Icono del botón */
+.navIcon {
+  position: relative;
+  z-index: 1;
+  display: block;
+  transition: margin-right 0.3s ease;
+}
+
+.navButton:hover .navIcon {
+  margin-right: 0.5rem;
+}
+
+/* Texto del botón (expandible) */
+.navTooltip {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition: max-width 0.3s ease, opacity 0.3s ease;
+  font-size: 0.95rem;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+
+.navButton:hover .navTooltip {
+  max-width: 200px;
+  opacity: 1;
 }

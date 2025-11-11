@@ -1,15 +1,25 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../../services/authService';
 
 export const useHeader = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const isSpanish = navigator.language.toLowerCase().startsWith('es');
-  const currentUser = authService.getCurrentUser();
+  const [currentUser, setCurrentUser] = useState(authService.getCurrentUser());
   
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  const refreshUser = () => {
+    setCurrentUser(authService.getCurrentUser());
+  };
+
+  // Actualizar el usuario cuando cambie la ruta
+  useEffect(() => {
+    refreshUser();
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -29,8 +39,8 @@ export const useHeader = () => {
 
   const handleLogout = () => {
     authService.logout();
+    setCurrentUser(null);
     navigate('/');
-    window.location.reload();
   };
 
   const getPersonalPageRoute = () => {
@@ -87,6 +97,7 @@ export const useHeader = () => {
     profileMenuRef,
     handleLogout,
     getPersonalPageRoute,
-    getPersonalPageLabel
+    getPersonalPageLabel,
+    refreshUser
   };
 };

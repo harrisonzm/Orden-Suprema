@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Contract, Assassin, Transaction, Report, User } from '../../types';
 import { authService } from '../../services/authService';
+import { transactionService } from '../../services/transactionService';
 
 // Función para convertir User a Assassin
 const userToAssassin = (user: User): Assassin => {
@@ -38,44 +39,11 @@ const getAvailableMissions = (): Contract[] => {
   );
 };
 
-const mockTransactions: Transaction[] = [
-  {
-    id: '1',
-    userId: '1',
-    userEmail: 'user1@example.com',
-    userName: 'John Wick',
-    type: 'purchase',
-    amount: 1000,
-    description: 'Compra de 1,000 monedas',
-    date: new Date('2024-01-20')
-  },
-  {
-    id: '2',
-    userId: '2',
-    userEmail: 'user2@example.com',
-    userName: 'Vincent',
-    type: 'payment',
-    amount: -5000,
-    description: 'Pago por contrato completado',
-    date: new Date('2024-01-19')
-  },
-  {
-    id: '3',
-    userId: '3',
-    userEmail: 'assassin@example.com',
-    userName: 'Shadow Hunter',
-    type: 'reward',
-    amount: 5000,
-    description: 'Recompensa por misión completada',
-    date: new Date('2024-01-19')
-  }
-];
-
 export const useAdmin = () => {
   const [activeTab, setActiveTab] = useState<'assign' | 'manage' | 'transactions' | 'reports'>('assign');
   const [assassins, setAssassins] = useState<Assassin[]>([]);
   const [contracts, setContracts] = useState<Contract[]>([]);
-  const [transactions] = useState<Transaction[]>(mockTransactions);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [reports, setReports] = useState<Report[]>([]);
   const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
   const [selectedAssassin, setSelectedAssassin] = useState<string>('');
@@ -91,6 +59,12 @@ export const useAdmin = () => {
 
   const isSpanish = navigator.language.toLowerCase().startsWith('es');
 
+  const loadTransactions = () => {
+    const realTransactions = transactionService.getAll();
+    console.log('💰 Transacciones cargadas:', realTransactions.length, realTransactions);
+    setTransactions(realTransactions);
+  };
+
   useEffect(() => {
     // Cargar asesinos reales del sistema
     const realAssassins = authService.getAllAssassins();
@@ -101,10 +75,20 @@ export const useAdmin = () => {
     const availableMissions = getAvailableMissions();
     setContracts(availableMissions);
 
+    // Cargar transacciones reales
+    loadTransactions();
+
     // Cargar reportes
     const loadedReports = authService.getReports();
     setReports(loadedReports);
   }, []);
+
+  // Recargar transacciones cuando se cambia a la pestaña de transacciones
+  useEffect(() => {
+    if (activeTab === 'transactions') {
+      loadTransactions();
+    }
+  }, [activeTab]);
 
   const handleAssignContract = () => {
     if (!selectedAssassin) {
@@ -326,6 +310,7 @@ export const useAdmin = () => {
     handleSuspendAssassin,
     handleDeleteAssassin,
     getStatusColor,
-    getStatusText
+    getStatusText,
+    loadTransactions
   };
 };

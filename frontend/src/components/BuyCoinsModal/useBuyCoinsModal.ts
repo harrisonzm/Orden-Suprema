@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { authService } from '../../services/authService';
+import { transactionService } from '../../services/transactionService';
 
 const COIN_PACKAGES = [
   { amount: 500, price: 5 },
@@ -12,9 +13,10 @@ const COIN_PACKAGES = [
 interface UseBuyCoinsModalProps {
   userEmail: string;
   onClose: () => void;
+  onPurchaseComplete?: () => void;
 }
 
-export const useBuyCoinsModal = ({ userEmail, onClose }: UseBuyCoinsModalProps) => {
+export const useBuyCoinsModal = ({ userEmail, onClose, onPurchaseComplete }: UseBuyCoinsModalProps) => {
   const [selectedPackage, setSelectedPackage] = useState(COIN_PACKAGES[0]);
   const [cardNumber, setCardNumber] = useState('');
   const [cardName, setCardName] = useState('');
@@ -26,7 +28,23 @@ export const useBuyCoinsModal = ({ userEmail, onClose }: UseBuyCoinsModalProps) 
   const handleBuyCoins = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Obtener el usuario actual para registrar la transacción
+    const currentUser = authService.getCurrentUser();
+    if (!currentUser) {
+      alert(isSpanish ? 'Error: Usuario no encontrado' : 'Error: User not found');
+      return;
+    }
+
+    // authService.updateCoins ya actualiza el currentUser en localStorage
     authService.updateCoins(userEmail, selectedPackage.amount);
+
+    // Registrar la transacción para que el admin pueda verla
+    transactionService.addPurchase(
+      userEmail,
+      currentUser.nickname,
+      selectedPackage.amount,
+      selectedPackage.price
+    );
 
     alert(
       isSpanish
@@ -38,8 +56,13 @@ export const useBuyCoinsModal = ({ userEmail, onClose }: UseBuyCoinsModalProps) 
     setCardName('');
     setExpiryDate('');
     setCvv('');
+    
     onClose();
-    window.location.reload();
+    
+    // Notificar al componente padre para que actualice el estado
+    if (onPurchaseComplete) {
+      onPurchaseComplete();
+    }
   };
 
   const formatCardNumber = (value: string) => {

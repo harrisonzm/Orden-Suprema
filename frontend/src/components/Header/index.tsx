@@ -17,7 +17,8 @@ const Header = () => {
     profileMenuRef,
     handleLogout,
     getPersonalPageRoute,
-    getPersonalPageLabel
+    getPersonalPageLabel,
+    refreshUser
   } = useHeader();
 
   return (
@@ -31,45 +32,51 @@ const Header = () => {
       <nav className={styles.nav}>
         <button 
           className={styles.navButton} 
-          aria-label={isSpanish ? "Inicio" : "Home"} 
+          aria-label={isSpanish ? "Inicio" : "Home"}
           onClick={() => navigate('/')}
         >
-          🏠
+          <span className={styles.navIcon}>🏠</span>
+          <span className={styles.navTooltip}>{isSpanish ? "Inicio" : "Home"}</span>
         </button>
         <button 
           className={styles.navButton} 
-          aria-label={isSpanish ? "Misiones" : "Missions"} 
+          aria-label={isSpanish ? "Misiones" : "Missions"}
           onClick={() => navigate('/missions')}
         >
-          📋
+          <span className={styles.navIcon}>📋</span>
+          <span className={styles.navTooltip}>{isSpanish ? "Misiones" : "Missions"}</span>
         </button>
         <button 
           className={styles.navButton} 
-          aria-label={isSpanish ? "Asesinos" : "Assassins"} 
+          aria-label={isSpanish ? "Asesinos" : "Assassins"}
           onClick={() => navigate('/assassins')}
         >
-          🗡️
+          <span className={styles.navIcon}>🗡️</span>
+          <span className={styles.navTooltip}>{isSpanish ? "Asesinos" : "Assassins"}</span>
         </button>
         <button 
           className={styles.navButton} 
-          aria-label={isSpanish ? "Nosotros" : "About Us"} 
+          aria-label={isSpanish ? "Nosotros" : "About Us"}
           onClick={() => navigate('/aboutus')}
         >
-          👥
+          <span className={styles.navIcon}>👥</span>
+          <span className={styles.navTooltip}>{isSpanish ? "Nosotros" : "About Us"}</span>
         </button>
         <button 
           className={styles.navButton} 
-          aria-label={isSpanish ? "Reseñas" : "Reviews"} 
+          aria-label={isSpanish ? "Reseñas" : "Reviews"}
           onClick={() => navigate('/reviews')}
         >
-          ⭐
+          <span className={styles.navIcon}>⭐</span>
+          <span className={styles.navTooltip}>{isSpanish ? "Reseñas" : "Reviews"}</span>
         </button>
         <button 
           className={styles.navButton} 
           aria-label={isSpanish ? "Clasificación" : "Leaderboard"} 
           onClick={() => navigate('/leaderboard')}
         >
-          🏆
+          <span className={styles.navIcon}>🏆</span>
+          <span className={styles.navTooltip}>{isSpanish ? "Clasificación" : "Leaderboard"}</span>
         </button>
       </nav>
 
@@ -177,6 +184,7 @@ const Header = () => {
           onClose={() => setShowBuyModal(false)}
           userEmail={currentUser.email}
           currentCoins={currentUser.coins}
+          onPurchaseComplete={refreshUser}
         />
       )}
     </header>

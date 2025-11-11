@@ -51,7 +51,7 @@ export const RequestFavorButton = ({
         title={isSpanish ? 'Solicitar un favor a este asesino' : 'Request a favor from this assassin'}
       >
         <span className={styles.requestFavorIcon}>🤝</span>
-        <span>{isSpanish ? 'Pedir Deuda' : 'Request Favor'}</span>
+        <span>{isSpanish ? 'Pedir Favor' : 'Request Favor'}</span>
       </button>
 
       {showModal && (

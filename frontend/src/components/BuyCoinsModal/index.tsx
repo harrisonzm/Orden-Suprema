@@ -6,9 +6,10 @@ interface BuyCoinsModalProps {
   onClose: () => void;
   userEmail: string;
   currentCoins: number;
+  onPurchaseComplete?: () => void;
 }
 
-const BuyCoinsModal = ({ isOpen, onClose, userEmail }: BuyCoinsModalProps) => {
+const BuyCoinsModal = ({ isOpen, onClose, userEmail, onPurchaseComplete }: BuyCoinsModalProps) => {
   const {
     COIN_PACKAGES,
     selectedPackage,
@@ -23,7 +24,7 @@ const BuyCoinsModal = ({ isOpen, onClose, userEmail }: BuyCoinsModalProps) => {
     handleCardNumberChange,
     handleExpiryChange,
     handleCvvChange
-  } = useBuyCoinsModal({ userEmail, onClose });
+  } = useBuyCoinsModal({ userEmail, onClose, onPurchaseComplete });
 
   if (!isOpen) return null;
 

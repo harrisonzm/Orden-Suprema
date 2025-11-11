@@ -29,6 +29,7 @@ interface MissionListSectionProps {
   formatCurrency: (amount: number) => string;
   getMissionStatus: (mission: Contract) => 'completed' | 'expired' | 'active';
   navigate: (path: string) => void;
+  onViewDetails: (mission: Contract) => void;
 }
 
 export const MissionListSection = ({
@@ -47,7 +48,8 @@ export const MissionListSection = ({
   formatDate,
   formatCurrency,
   getMissionStatus,
-  navigate
+  navigate,
+  onViewDetails
 }: MissionListSectionProps) => {
   console.log('🎨 MissionListSection render:', {
     viewMode,
@@ -148,6 +150,7 @@ export const MissionListSection = ({
               formatCurrency={formatCurrency}
               status={getMissionStatus(mission)}
               isSpanish={isSpanish}
+              onViewDetails={() => onViewDetails(mission)}
             />
           ))
         )}

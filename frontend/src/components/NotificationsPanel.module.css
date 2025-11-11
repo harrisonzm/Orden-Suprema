@@ -246,3 +246,51 @@
     right: -1rem;
   }
 }
+
+.amount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--gold-alpha-15);
+  border-radius: 8px;
+  margin: 0.75rem 0;
+}
+
+.amountLabel {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.amountValue {
+  color: var(--primary-gold);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.timestamp {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  text-align: right;
+}
+
+.dismissButton {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--gold-alpha-15);
+  border: 2px solid var(--gold-alpha-30);
+  border-radius: 8px;
+  color: var(--primary-gold);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dismissButton:hover {
+  background: var(--gold-alpha-30);
+  border-color: var(--primary-gold);
+  transform: translateY(-1px);
+}

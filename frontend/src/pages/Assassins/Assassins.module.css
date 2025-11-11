@@ -920,3 +920,121 @@
   font-size: 0.85rem;
   font-style: italic;
 }
+
+/* Envío de monedas */
+.sendCoinsButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+
+.sendCoinsButton:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  border-color: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+.sendCoinsIcon {
+  font-size: 1.3rem;
+}
+
+.sendCoinsForm {
+  background: var(--gold-alpha-10);
+  border: 2px solid var(--gold-alpha-30);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.userCoinsInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--gold-alpha-15);
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.userCoinsLabel {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.userCoinsAmount {
+  color: var(--primary-gold);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.sendCoinsActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.cancelButton {
+  flex: 1;
+  padding: 0.875rem;
+  background: var(--gold-alpha-15);
+  border: 2px solid var(--gold-alpha-30);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancelButton:hover {
+  background: var(--gold-alpha-25);
+  border-color: var(--gold-alpha-50);
+}
+
+.confirmSendButton {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 2px solid #10b981;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.confirmSendButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  border-color: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.confirmSendButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.buttonIcon {
+  font-size: 1.1rem;
+}

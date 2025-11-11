@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { authService } from '../../services/authService';
 import { debtService } from '../../services/debtService';
+import { transactionService } from '../../services/transactionService';
+import { notificationService } from '../../services/notificationService';
 
 export interface AssassinProfile {
   id: string;
@@ -132,9 +134,14 @@ export const useAssassins = () => {
   const [newMissionLocation, setNewMissionLocation] = useState('');
   const [newMissionDeadline, setNewMissionDeadline] = useState('');
 
+  // Estados para envío de monedas
+  const [showSendCoinsModal, setShowSendCoinsModal] = useState(false);
+  const [coinsToSend, setCoinsToSend] = useState('');
+  const [transferMessage, setTransferMessage] = useState('');
+
   const isSpanish = navigator.language.toLowerCase().startsWith('es');
 
-  useEffect(() => {
+  const loadAssassins = () => {
     // Simular carga de datos
     setAssassins(mockAssassins);
     
@@ -146,6 +153,10 @@ export const useAssassins = () => {
       );
       setUserMissions([...missions, ...publicMissions]);
     }
+  };
+
+  useEffect(() => {
+    loadAssassins();
   }, [currentUser]);
 
   const filteredAssassins = useMemo(() => {
@@ -310,11 +321,97 @@ export const useAssassins = () => {
           : `Mission created and proposed to ${selectedAssassin.name}!`
       );
 
-      window.location.reload();
+      // Recargar la lista de asesinos
+      loadAssassins();
     }
 
     setShowProposeModal(false);
     setSelectedAssassin(null);
+  };
+
+  const handleSendCoins = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!currentUser || !selectedAssassin) {
+      alert(isSpanish ? 'Error: Usuario no encontrado' : 'Error: User not found');
+      return;
+    }
+
+    const amount = parseInt(coinsToSend);
+    if (isNaN(amount) || amount <= 0) {
+      alert(isSpanish ? 'Ingresa una cantidad válida' : 'Enter a valid amount');
+      return;
+    }
+
+    if (amount > currentUser.coins) {
+      alert(isSpanish ? 'No tienes suficientes monedas' : "You don't have enough coins");
+      return;
+    }
+
+    // Confirmar la transferencia
+    const confirmMessage = transferMessage
+      ? isSpanish
+        ? `¿Confirmas enviar ${amount.toLocaleString()} monedas a ${selectedAssassin.name}?\n\nMensaje: "${transferMessage}"`
+        : `Do you confirm sending ${amount.toLocaleString()} coins to ${selectedAssassin.name}?\n\nMessage: "${transferMessage}"`
+      : isSpanish
+      ? `¿Confirmas enviar ${amount.toLocaleString()} monedas a ${selectedAssassin.name}?`
+      : `Do you confirm sending ${amount.toLocaleString()} coins to ${selectedAssassin.name}?`;
+
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      // Obtener el email del asesino desde su ID (que está en base64)
+      const assassinEmail = atob(selectedAssassin.id);
+
+      // Descontar monedas del remitente
+      const success = authService.updateCoins(currentUser.email, -amount);
+      if (!success) {
+        alert(isSpanish ? 'Error al procesar la transferencia' : 'Error processing transfer');
+        return;
+      }
+
+      // Agregar monedas al receptor
+      authService.updateCoins(assassinEmail, amount);
+
+      // Registrar las transacciones
+      transactionService.addTransfer(
+        currentUser.email,
+        currentUser.nickname,
+        assassinEmail,
+        selectedAssassin.name,
+        amount,
+        transferMessage || undefined
+      );
+
+      // Crear notificación para el receptor
+      notificationService.addTransferNotification(
+        assassinEmail,
+        currentUser.email,
+        currentUser.nickname,
+        amount,
+        transferMessage || undefined
+      );
+
+      alert(
+        isSpanish
+          ? `¡Transferencia exitosa! Has enviado ${amount.toLocaleString()} monedas a ${selectedAssassin.name}.`
+          : `Transfer successful! You sent ${amount.toLocaleString()} coins to ${selectedAssassin.name}.`
+      );
+
+      // Limpiar el formulario
+      setCoinsToSend('');
+      setTransferMessage('');
+      setShowSendCoinsModal(false);
+      setShowDetailModal(false);
+
+      // Nota: El saldo se actualizará cuando el usuario navegue o cuando se refresque el Header
+      // Para una actualización inmediata, se necesitaría un contexto global o callback
+    } catch (error) {
+      console.error('Error sending coins:', error);
+      alert(isSpanish ? 'Error al enviar monedas' : 'Error sending coins');
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -379,9 +476,16 @@ export const useAssassins = () => {
     setNewMissionLocation,
     newMissionDeadline,
     setNewMissionDeadline,
+    showSendCoinsModal,
+    setShowSendCoinsModal,
+    coinsToSend,
+    setCoinsToSend,
+    transferMessage,
+    setTransferMessage,
     handleViewDetails,
     handleProposeClick,
     handleSubmitProposal,
+    handleSendCoins,
     getStatusColor,
     getStatusText,
     isSpanish

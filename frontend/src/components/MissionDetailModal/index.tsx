@@ -10,6 +10,7 @@ interface MissionDetailModalProps {
   showNegotiation?: boolean;
   onAcceptNegotiation?: (mission: Contract) => void;
   onRejectNegotiation?: (mission: Contract) => void;
+  onCompleteMission?: (mission: Contract) => void;
 }
 
 const MissionDetailModal = ({
@@ -20,7 +21,8 @@ const MissionDetailModal = ({
   isSpanish = false,
   showNegotiation = true,
   onAcceptNegotiation,
-  onRejectNegotiation
+  onRejectNegotiation,
+  onCompleteMission
 }: MissionDetailModalProps) => {
   if (!isOpen || !mission) return null;
 
@@ -78,6 +80,7 @@ const MissionDetailModal = ({
   const isOwner = currentUser && mission.contractorId === currentUser.id;
   const shouldShowNegotiationDetails = showNegotiation && mission.negotiation && isOwner;
   const shouldShowNegotiationMessage = showNegotiation && mission.negotiation && !isOwner;
+  const canComplete = isOwner && mission.status === 'in_progress' && !mission.terminado && onCompleteMission;
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -229,6 +232,25 @@ const MissionDetailModal = ({
             </div>
           )}
         </div>
+
+        {canComplete && (
+          <div className={styles.modalFooter}>
+            <button
+              className={styles.completeButton}
+              onClick={() => {
+                if (confirm(isSpanish 
+                  ? '¿Confirmas que esta misión ha sido completada exitosamente? Se le pagarán las monedas al asesino.'
+                  : 'Do you confirm that this mission has been completed successfully? The assassin will be paid.')) {
+                  onCompleteMission!(mission);
+                  onClose();
+                }
+              }}
+            >
+              <span className={styles.buttonIcon}>✅</span>
+              {isSpanish ? 'Marcar como Completada' : 'Mark as Completed'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

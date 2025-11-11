@@ -3,6 +3,7 @@ import { useAssassin } from './useAssassin';
 import { MissionListSection } from './MissionListSection';
 import { DebtsSection } from './DebtsSection';
 import { debtService } from '../../services/debtService';
+import MissionDetailModal from '../../components/MissionDetailModal';
 import styles from './Assassin.module.css';
 
 const Assassin = () => {
@@ -27,7 +28,11 @@ const Assassin = () => {
     formatDate,
     formatCurrency,
     getMissionStatus,
-    navigate
+    navigate,
+    selectedMission,
+    showDetailModal,
+    setShowDetailModal,
+    handleViewDetails
   } = useAssassin();
 
   // Estado para deudas
@@ -88,6 +93,21 @@ const Assassin = () => {
       return 'Unknown';
     }
   };
+
+  // Mostrar loading si no hay datos del usuario
+  if (!userEmail || !userName) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.main}>
+          <div className={styles.header}>
+            <h1 className={styles.title}>
+              {isSpanish ? 'Cargando...' : 'Loading...'}
+            </h1>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -164,6 +184,7 @@ const Assassin = () => {
           formatCurrency={formatCurrency}
           getMissionStatus={getMissionStatus}
           navigate={navigate}
+          onViewDetails={handleViewDetails}
         />
 
         {/* Debts Section */}
@@ -176,6 +197,16 @@ const Assassin = () => {
           onMarkCompleted={handleMarkCompleted}
           getAssassinName={getAssassinName}
           onRefresh={loadDebts}
+        />
+
+        {/* Modal de detalles de misión */}
+        <MissionDetailModal
+          mission={selectedMission}
+          isOpen={showDetailModal}
+          onClose={() => setShowDetailModal(false)}
+          currentUser={{ email: userEmail, role: 'assassin', nickname: userName }}
+          isSpanish={isSpanish}
+          showNegotiation={false}
         />
       </div>
     </div>

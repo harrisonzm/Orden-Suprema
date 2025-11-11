@@ -45,7 +45,8 @@ const Contractor = () => {
     handleSubmitReport,
     handleCreateMission,
     handleAcceptNegotiation,
-    handleRejectNegotiation
+    handleRejectNegotiation,
+    handleCompleteMission
   } = useContractor();
 
   return (
@@ -380,6 +381,7 @@ const Contractor = () => {
         showNegotiation={true}
         onAcceptNegotiation={handleAcceptNegotiation}
         onRejectNegotiation={handleRejectNegotiation}
+        onCompleteMission={handleCompleteMission}
       />
     </div>
   );

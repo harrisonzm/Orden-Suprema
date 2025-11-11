@@ -19,7 +19,8 @@ export const MissionCard = ({
   formatDate,
   formatCurrency,
   status,
-  isSpanish
+  isSpanish,
+  onViewDetails
 }: MissionCardProps) => {
   return (
     <div className={`${styles.missionCard} ${viewMode === 'history' ? styles.missionCardHistory : styles.missionCardActive}`}>
@@ -80,11 +81,12 @@ export const MissionCard = ({
           🪙 {formatCurrency(mission.reward)}
         </span>
         
-        {viewMode === 'active' && (
-          <button className={styles.detailsButton}>
-            {isSpanish ? 'Ver Detalles' : 'View Details'}
-          </button>
-        )}
+        <button 
+          className={styles.detailsButton}
+          onClick={onViewDetails}
+        >
+          {isSpanish ? 'Ver Detalles' : 'View Details'}
+        </button>
       </div>
     </div>
   );

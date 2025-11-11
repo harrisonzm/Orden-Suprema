@@ -25,6 +25,8 @@ export const useAssassin = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('active');
   const [showFilters, setShowFilters] = useState(false);
   const [isSpanish, setIsSpanish] = useState(true);
+  const [selectedMission, setSelectedMission] = useState<Contract | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   // Filtros unificados
   const [filters, setFilters] = useState<MissionFilters>({
@@ -85,35 +87,37 @@ export const useAssassin = () => {
       }
     });
     
-    // Filtrar misiones activas del asesino
+    // Filtrar misiones activas del asesino (en progreso y no completadas)
     const activeMissionsList = allMissions.filter(
       (mission: any) => 
         mission.assassinId === encodedEmail && 
         !mission.terminado &&
+        mission.status !== 'completed' &&
         (mission.status === 'in-progress' || mission.status === 'in_progress')
     ) as Contract[];
 
     setActiveMissions(activeMissionsList);
 
-    // Cargar historial (misiones completadas o expiradas)
+    // Cargar historial (solo misiones completadas o con estado completed)
+    // Las misiones expiradas pero no completadas siguen en activas
     const historyMissionsList = allMissions.filter(
       (mission: any) => 
         mission.assassinId === encodedEmail && 
-        (mission.terminado || mission.status === 'completed' || isExpired(mission.deadline))
+        (mission.terminado || mission.status === 'completed')
     ) as Contract[];
 
     setHistoryMissions(historyMissionsList);
     
-    // Calcular reputación histórica (promedio de ratings de todas las misiones completadas)
-    const completedMissions = historyMissionsList.filter((m: any) => m.terminado && m.rating);
+    // Calcular reputación histórica (promedio de ratings de todas las misiones completadas con reseña)
+    const completedMissions = historyMissionsList.filter((m: any) => m.terminado && m.review && m.review.rating);
     if (completedMissions.length > 0) {
-      const totalRating = completedMissions.reduce((sum: number, m: any) => sum + (m.rating || 0), 0);
+      const totalRating = completedMissions.reduce((sum: number, m: any) => sum + (m.review?.rating || 0), 0);
       const avgRating = totalRating / completedMissions.length;
       setUserReputationAllTime(avgRating);
-      console.log('Reputación histórica:', avgRating.toFixed(1), 'de', completedMissions.length, 'misiones');
+      console.log('✨ Reputación histórica:', avgRating.toFixed(1), 'de', completedMissions.length, 'misiones con reseña');
     } else {
       setUserReputationAllTime(0);
-      console.log('Sin reputación histórica');
+      console.log('📊 Sin reputación histórica (sin reseñas)');
     }
     
     // Calcular reputación del último mes
@@ -130,13 +134,13 @@ export const useAssassin = () => {
     });
     
     if (recentCompletedMissions.length > 0) {
-      const totalRecentRating = recentCompletedMissions.reduce((sum: number, m: any) => sum + (m.rating || 0), 0);
+      const totalRecentRating = recentCompletedMissions.reduce((sum: number, m: any) => sum + (m.review?.rating || 0), 0);
       const avgRecentRating = totalRecentRating / recentCompletedMissions.length;
       setUserReputationLastMonth(avgRecentRating);
-      console.log('Reputación último mes:', avgRecentRating.toFixed(1), 'de', recentCompletedMissions.length, 'misiones');
+      console.log('📅 Reputación último mes:', avgRecentRating.toFixed(1), 'de', recentCompletedMissions.length, 'misiones con reseña');
     } else {
       setUserReputationLastMonth(0);
-      console.log('Sin reputación del último mes');
+      console.log('📊 Sin reputación del último mes (sin reseñas recientes)');
     }
     
     console.log('Misiones activas encontradas:', activeMissionsList.length);
@@ -335,6 +339,11 @@ export const useAssassin = () => {
     return 'active';
   };
 
+  const handleViewDetails = (mission: Contract) => {
+    setSelectedMission(mission);
+    setShowDetailModal(true);
+  };
+
   return {
     userEmail,
     userName,
@@ -358,6 +367,10 @@ export const useAssassin = () => {
     formatDate,
     formatCurrency,
     getMissionStatus,
-    navigate
+    navigate,
+    selectedMission,
+    showDetailModal,
+    setShowDetailModal,
+    handleViewDetails
   };
 };

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Contract, Review } from '../../types';
 import { authService } from '../../services/authService';
+import { transactionService } from '../../services/transactionService';
 
 export const useContractor = () => {
   const currentUser = authService.getCurrentUser();
@@ -182,7 +183,11 @@ export const useContractor = () => {
         : 'Mission created successfully!'
     );
 
-    window.location.reload();
+    // Recargar las misiones del usuario
+    if (currentUser) {
+      const updatedMissions = authService.getUserMissions(currentUser.email);
+      setContracts(updatedMissions);
+    }
   };
 
   const handleAcceptNegotiation = (mission: Contract) => {
@@ -222,8 +227,57 @@ export const useContractor = () => {
         ? '¡Propuesta aceptada! La misión ha sido asignada.'
         : 'Proposal accepted! Mission has been assigned.');
 
-      window.location.reload();
+      // Recargar las misiones del usuario
+      if (currentUser) {
+        const updatedMissions = authService.getUserMissions(currentUser.email);
+        setContracts(updatedMissions);
+      }
+      setShowDetailModal(false);
     }
+  };
+
+  const handleCompleteMission = (mission: Contract) => {
+    if (!currentUser) return;
+
+    // Marcar la misión como completada
+    const updatedMission = {
+      ...mission,
+      terminado: true,
+      status: 'completed' as const,
+      completedAt: new Date()
+    };
+
+    // Actualizar la misión
+    authService.updateMission(currentUser.email, mission.id, updatedMission);
+
+    // Pagar al asesino
+    if (mission.assassinId) {
+      const assassinEmail = atob(mission.assassinId);
+      authService.updateCoins(assassinEmail, mission.reward);
+
+      // Registrar la transacción de recompensa
+      const nicknames = localStorage.getItem('nicknames');
+      const nicknamesDict = nicknames ? JSON.parse(nicknames) : {};
+      const assassinName = nicknamesDict[assassinEmail] || mission.assassinName || assassinEmail;
+
+      transactionService.addReward(
+        assassinEmail,
+        assassinName,
+        mission.reward,
+        `Recompensa por misión completada: ${mission.title}`
+      );
+
+      alert(
+        isSpanish
+          ? `¡Misión completada! Se han transferido ${mission.reward.toLocaleString()} monedas a ${assassinName}.`
+          : `Mission completed! ${mission.reward.toLocaleString()} coins have been transferred to ${assassinName}.`
+      );
+    }
+
+    // Recargar las misiones
+    const updatedMissions = authService.getUserMissions(currentUser.email);
+    setContracts(updatedMissions);
+    setShowDetailModal(false);
   };
 
   const handleRejectNegotiation = (mission: Contract) => {
@@ -256,7 +310,12 @@ export const useContractor = () => {
         ? 'Propuesta rechazada. La misión vuelve a estar abierta.'
         : 'Proposal rejected. Mission is open again.');
 
-      window.location.reload();
+      // Recargar las misiones del usuario
+      if (currentUser) {
+        const updatedMissions = authService.getUserMissions(currentUser.email);
+        setContracts(updatedMissions);
+      }
+      setShowDetailModal(false);
     }
   };
 
@@ -303,6 +362,7 @@ export const useContractor = () => {
     handleCreateMission,
     handleAcceptNegotiation,
     handleRejectNegotiation,
+    handleCompleteMission,
     getStatusColor,
     getStatusText
   };

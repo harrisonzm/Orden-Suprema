@@ -405,7 +405,6 @@ const Missions = () => {
               className={styles.successButton}
               onClick={() => {
                 setShowSuccessModal(false);
-                window.location.reload();
               }}
             >
               {isSpanish ? 'Entendido' : 'Got it'}
